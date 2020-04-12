@@ -21,7 +21,7 @@ export const buildCard = (item) => {
       </div>`
 
     card.addEventListener('click', (e) => rotate(e, 'card__button'));
-    card.addEventListener('mouseout', (e) => rotate(e, 'is-flipped'));
+    card.addEventListener('mouseleave', (e) => rotate(e, 'is-flipped'));
 
   } else {
     card.innerHTML = `
@@ -35,8 +35,8 @@ export const buildCard = (item) => {
   return card;
 };
 
-function rotate(event, classContains) {
-  if (event.target.classList.contains(classContains)) {
+function rotate(event, targetClass) {
+  if (event.target.classList.contains(targetClass)) {
     event.currentTarget.querySelector('.front').classList.toggle('hidden');
     event.currentTarget.querySelector('.back').classList.toggle('hidden');
     event.currentTarget.classList.toggle('is-flipped')
