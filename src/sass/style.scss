@@ -1,3 +1,41 @@
-body {
-  background: aqua;
+.menu{
+  &__link {
+    &--active {
+      color: red;
+    }
+  }
 }
+
+.card {
+  width: 20%;
+  border: 1px solid black;
+  &__img {
+    width: 100%;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.card__container {
+  -webkit-perspective: 500px;
+  perspective: 800px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card.is-flipped {
+  -webkit-transform: rotateY( 180deg );
+  transform: rotateY( 180deg );
+}
+
+.card .back {
+  transform: rotateY( 180deg );
+}
+

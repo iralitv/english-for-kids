@@ -1,15 +1,9 @@
 import '../sass/style.scss';
-import {Card} from './app/Сard';
 import Menu from './app/Menu';
-
-const object = {
-  word: 'sing',
-  translation: 'петь',
-  image: 'img/sing.jpg',
-  audioSrc: 'audio/sing.mp3'
-}
-
-document.querySelector('main').innerHTML = Card(object)
+import Game from "./app/Game";
 
 const menu = new Menu();
 menu.init();
+
+const cards = new Game();
+cards.init();

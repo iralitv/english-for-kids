@@ -19,7 +19,6 @@ class Menu {
 
     this.elements.menuContainer.appendChild(this.createItems());
 
-    // this.elements.activeItem && this.elements.activeItem.classList.add('active');
     document.querySelector('header').appendChild(this.elements.menuContainer);
 
     this.elements.menuContainer.addEventListener('click',
@@ -42,8 +41,12 @@ class Menu {
 
       menuElement.textContent = item;
 
+      if(menuElement.textContent === this.elements.menuItems[0]) {
+        menuElement.setAttribute('href', 'index.html');
+      }
+
       if(menuElement.textContent === localStorage.getItem('category')) {
-        menuElement.classList.add('active')
+        menuElement.classList.add('menu__link--active')
       }
 
       fragment.appendChild(menuElement);
