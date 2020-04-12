@@ -20,7 +20,10 @@ export const buildCard = (item) => {
         <p class="card__translation">${item.translation}</p>
       </div>`
 
-    card.addEventListener('click', (e) => rotate(e, 'card__button'));
+    card.addEventListener('click', (e) => {
+      playAudio(`data/${item.audioSrc}`, e);
+      rotate(e, 'card__button');
+    });
     card.addEventListener('mouseleave', (e) => rotate(e, 'is-flipped'));
 
   } else {
@@ -40,5 +43,11 @@ function rotate(event, targetClass) {
     event.currentTarget.querySelector('.front').classList.toggle('hidden');
     event.currentTarget.querySelector('.back').classList.toggle('hidden');
     event.currentTarget.classList.toggle('is-flipped')
+  }
+}
+
+function playAudio(url, event) {
+  if (!event.target.classList.contains('card__button')) {
+    new Audio(url).play();
   }
 }
