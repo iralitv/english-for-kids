@@ -1,5 +1,6 @@
 import builtHtmlElement from "./templateHelper";
-import cards from "../../../data/cards";
+import { isMenuCategory } from "./flags";
+import {rotateCard} from "./heplers";
 
 export const buildCard = (item) => {
   const card = builtHtmlElement({
@@ -7,8 +8,7 @@ export const buildCard = (item) => {
     classList: ['card']
   });
 
-  if(localStorage.getItem('category') !== cards[0][0]) {
-
+  if(!isMenuCategory) {
     card.innerHTML = `
       <div class="front">
         <img src="data/${item.image}" alt="" class="card__img"/>
@@ -18,14 +18,11 @@ export const buildCard = (item) => {
       <div class="back hidden">
         <img src="data/${item.image}" alt="" class="card__img"/>
         <p class="card__translation">${item.translation}</p>
-      </div>`
-
-    card.addEventListener('click', (e) => {
-      playAudio(`data/${item.audioSrc}`, e);
-      rotate(e, 'card__button');
+      </div>`;
+    card.addEventListener('mouseleave', (event) => {
+      if(event.target.classList.contains('is-flipped'))
+      rotateCard(event.currentTarget)
     });
-    card.addEventListener('mouseleave', (e) => rotate(e, 'is-flipped'));
-
   } else {
     card.innerHTML = `
       <a href="category.html" class="card__word">${item}</a>
@@ -38,16 +35,4 @@ export const buildCard = (item) => {
   return card;
 };
 
-function rotate(event, targetClass) {
-  if (event.target.classList.contains(targetClass)) {
-    event.currentTarget.querySelector('.front').classList.toggle('hidden');
-    event.currentTarget.querySelector('.back').classList.toggle('hidden');
-    event.currentTarget.classList.toggle('is-flipped')
-  }
-}
 
-function playAudio(url, event) {
-  if (!event.target.classList.contains('card__button')) {
-    new Audio(url).play();
-  }
-}
