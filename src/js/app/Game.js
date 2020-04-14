@@ -1,7 +1,7 @@
 import { buildCard } from './cardTemplate';
 import cards from "../../../data/cards";
 import builtHtmlElement from "./templateHelper";
-import {isTrainMode} from "./flags";
+import {isMenuCategory, isTrainMode} from "./flags";
 import {playAudio, rotateCard} from "./heplers";
 
 class Game {
@@ -29,19 +29,20 @@ class Game {
       classList: ['card__container'],
     });
 
-    this.elements.cardContainer.appendChild(this.createItems());
-    this.elements.main.appendChild(this.elements.cardContainer);
-
     this.elements.startButton = builtHtmlElement({
       tagName: 'button',
-      classList: ['card__button--start'],
+      classList: ['card__button--start', 'hidden'],
     });
 
     this.elements.startButton.innerText = 'Start';
 
+    this.elements.cardContainer.appendChild(this.createItems());
+    this.elements.main.appendChild(this.elements.cardContainer);
+    this.elements.main.appendChild(this.elements.startButton);
+
     if(!isTrainMode(localStorage.getItem('mode'))) {
-      this.elements.main.appendChild(this.elements.startButton);
       this.elements.cardContainer.childNodes.forEach(item => item.classList.add('card--play'));
+      (!isMenuCategory) && this.elements.startButton.classList.remove('hidden');
     }
 
     document.querySelector('.switch-field').addEventListener('click',
@@ -65,14 +66,14 @@ class Game {
   }
 
   selectCard(event) {
-    const cardIndex = [].indexOf.call(event.currentTarget.children, event.target.parentNode.parentNode);
+    const currentChild = event.target.closest('.card__face') && event.target.closest('.card__face').parentNode;
+    const cardIndex = [...event.currentTarget.childNodes].indexOf(currentChild);
+
     if(cardIndex !== -1) {
-      if (isTrainMode(this.props.mode)){
-        if (!event.target.classList.contains('card__button')) {
-          playAudio(`data/${this.data.audio[cardIndex]}`);
-        } else {
-          rotateCard(event.currentTarget.children[cardIndex]);
-        }
+      if (isTrainMode(localStorage.getItem('mode'))){
+        (!event.target.classList.contains('card__desc--button'))
+          ? playAudio(`data/${this.data.audio[cardIndex]}`)
+          : rotateCard(event.currentTarget.children[cardIndex]);
       } else {
         console.log('lalalaaa')
       }
@@ -83,13 +84,13 @@ class Game {
     localStorage.setItem('mode', event.target.value);
 
     if(isTrainMode(event.target.value)) {
-      this.elements.main.removeChild(this.elements.startButton);
       this.elements.cardContainer.childNodes.forEach(item => item.classList.remove('card--play'));
+      this.elements.startButton.classList.add('hidden');
     }
 
     if(!isTrainMode(event.target.value)){
-      this.elements.main.appendChild(this.elements.startButton);
       this.elements.cardContainer.childNodes.forEach(item => item.classList.add('card--play'));
+      (!isMenuCategory) && this.elements.startButton.classList.remove('hidden');
     }
   }
 }

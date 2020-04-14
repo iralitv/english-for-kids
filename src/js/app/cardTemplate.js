@@ -10,12 +10,14 @@ export const buildCard = (item) => {
 
   if(!isMenuCategory) {
     card.innerHTML = `
-      <div class="front">
+      <div class="card__face card__face--front">
         <img src="data/${item.image}" alt="" class="card__img"/>
-        <p class="card__word">${item.word}</p>
-        <button class="card__button">Hint</button>
+        <div class="card__desc">
+          <p class="card__desc--word">${item.word}</p>
+          <button class="card__desc--button">Hint</button>
+        </div>
       </div>
-      <div class="back hidden">
+      <div class="card__face card__face--back">
         <img src="data/${item.image}" alt="" class="card__img"/>
         <p class="card__translation">${item.translation}</p>
       </div>`;
@@ -25,7 +27,7 @@ export const buildCard = (item) => {
     });
   } else {
     card.innerHTML = `
-      <a href="category.html" class="card__word">${item}</a>
+      <a href="category.html" class="card__link">${item}</a>
     `;
     card.addEventListener('click', () => {
       localStorage.setItem('category', item);
