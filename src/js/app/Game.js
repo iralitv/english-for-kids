@@ -56,6 +56,13 @@ class Game {
       (event) => this.changeMode(event));
 
     this.elements.cardContainer.addEventListener('click', (e) => this.selectCard(e));
+    this.elements.cardContainer.addEventListener('mouseout', (event) => {
+      let relatedTarget = event.relatedTarget && event.relatedTarget.closest('.is-flipped');
+
+      if(relatedTarget) {
+        setTimeout(() => rotateCard(relatedTarget), 100);
+      }
+    });
     this.elements.startButton.addEventListener('click', (e) => this.startGame(e));
   }
 
@@ -79,29 +86,51 @@ class Game {
 
     if(this.props.currentCardIndex !== -1) {
       if (isTrainMode(localStorage.getItem('mode'))){
+
         (!event.target.classList.contains('card__desc--button'))
           ? playAudio(`data/${this.data.audio[this.props.currentCardIndex]}`)
           : rotateCard(event.currentTarget.children[this.props.currentCardIndex]);
-      } else {
-        if (this.game.isStart){
-          if (this.game.currentAudioIndex !== this.props.currentCardIndex) {
+
+      } else if (!isTrainMode(localStorage.getItem('mode')) && this.game.isStart) {
+
+        if (this.game.currentAudioIndex !== this.props.currentCardIndex) {
+
+          if(currentChild.classList.contains('blur')) {
+            event.stopPropagation();
+          } else {
             playAudio('data/audio/error.mp3');
             this.game.guessArray.push('error');
-          } else {
-            this.game.guessArray.push('cool');
-            currentChild.classList.add('blur');
-            playAudio('data/audio/correct.mp3');
-            this.game.currentAudio = this.game.shuffleAudio.splice(0, 1)[0];
-            this.game.currentAudioIndex = this.data.audio.indexOf(this.game.currentAudio);
-            setTimeout(() => playAudio(`data/${this.game.currentAudio}`), 500);
           }
 
-          console.log(this.game.shuffleAudio);
-          console.log('audio: ', this.game.currentAudioIndex);
-          console.log('card: ', this.props.currentCardIndex)
-          console.log('guess: ', this.game.guessArray)
+        } else {
+
+          if(this.game.shuffleAudio.length) {
+            this.game.currentAudio = this.game.shuffleAudio.splice(0, 1)[0];
+            this.game.currentAudioIndex = this.data.audio.indexOf(this.game.currentAudio);
+
+            if(currentChild.classList.contains('blur')) {
+              event.stopPropagation();
+            } else {
+              this.game.guessArray.push('cool');
+              playAudio('data/audio/correct.mp3');
+              currentChild.classList.add('blur');
+            }
+
+            setTimeout(() => playAudio(`data/${this.game.currentAudio}`), 500);
+          } else {
+            this.checkResult(this.game.guessArray);
+            this.game.isStart = false;
+            this.game.guessArray.length = 0;
+            this.elements.startButton.classList.remove('button--repeat');
+            this.elements.cardContainer.childNodes.forEach(item => item.classList.remove('blur'));
+          }
+
         }
 
+        console.log(this.game.shuffleAudio);
+        console.log('audio: ', this.game.currentAudioIndex);
+        console.log('card: ', this.props.currentCardIndex)
+        console.log('guess: ', this.game.guessArray)
       }
     }
   }
@@ -129,6 +158,19 @@ class Game {
     }
     event.currentTarget.classList.add('button--repeat');
     playAudio(`data/${this.game.currentAudio}`);
+  }
+
+  checkResult(array) {
+    const error = array
+      .map(item => item === 'error')
+      .filter(Boolean)
+      .length;
+
+    if(!error) {
+      alert('without errors')
+    } else {
+      alert(`with ${error} error`)
+    }
   }
 }
 

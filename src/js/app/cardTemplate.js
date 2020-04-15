@@ -21,10 +21,6 @@ export const buildCard = (item) => {
         <img src="data/${item.image}" alt="" class="card__img"/>
         <p class="card__translation">${item.translation}</p>
       </div>`;
-    card.addEventListener('mouseleave', (event) => {
-      if(event.target.classList.contains('is-flipped'))
-      rotateCard(event.currentTarget)
-    });
   } else {
     card.innerHTML = `
       <a href="category.html" class="card__link">${item}</a>
