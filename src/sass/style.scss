@@ -172,3 +172,65 @@
     background: yellow;
   }
 }
+
+.burger-menu {
+  &__button {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+  }
+  &__lines,
+  &__lines::before,
+  &__lines::after {
+    position: absolute;
+    width: 25px;
+    height: 2px;
+    background: #000;
+    transition: 0.4s;
+  }
+  &__lines {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  &__lines::before {
+    content: '';
+    top: 8px;
+  }
+  &__lines::after {
+    content: '';
+    top: -8px;
+  }
+
+  &__nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100vh;
+    box-sizing: border-box;
+    z-index: 10;
+  }
+  &--active {
+    &.burger-menu__nav {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+  }
+  &__button--active {
+    .burger-menu__lines {
+      background: transparent;
+    }
+    .burger-menu__lines::before {
+      top: 0;
+      transform: rotate(45deg);
+    }
+    .burger-menu__lines::after {
+      top: 0;
+      transform: rotate(-45deg);
+    }
+  }
+}

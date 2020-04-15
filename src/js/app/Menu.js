@@ -8,6 +8,7 @@ class Menu {
       menuItems: cards[0],
       menuNodes: null,
       modeItem: null,
+      burgerButton: null,
     };
 
     this.props = {
@@ -19,8 +20,15 @@ class Menu {
   init() {
     this.elements.menuContainer = builtHtmlElement({
       tagName: 'nav',
-      classList: ['menu'],
+      classList: ['menu', 'burger-menu__nav'],
     });
+
+    this.elements.burgerButton = builtHtmlElement({
+      tagName: 'div',
+      classList: ['burger-menu__button'],
+    });
+
+    this.elements.burgerButton.innerHTML = `<span class="burger-menu__lines"></span>`
 
     this.elements.modeItem = builtHtmlElement({
       tagName: 'div',
@@ -35,8 +43,14 @@ class Menu {
     `;
 
     this.elements.menuContainer.appendChild(this.createItems());
-    document.querySelector('header').appendChild(this.elements.menuContainer);
-    document.querySelector('header').appendChild(this.elements.modeItem);
+
+    const HEADER = document.querySelector('header');
+    const fragment = document.createDocumentFragment();
+
+    fragment.appendChild(this.elements.burgerButton);
+    fragment.appendChild(this.elements.menuContainer);
+    fragment.appendChild(this.elements.modeItem);
+    HEADER.appendChild(fragment);
 
     this.elements.modeItem.querySelectorAll('input[name=switch]').forEach(item => {
       if(item.value === localStorage.getItem('mode')) {
@@ -44,8 +58,19 @@ class Menu {
       }
     });
 
-    this.elements.menuContainer.addEventListener('click',
-      (event) => localStorage.setItem('category', event.target.textContent));
+    HEADER.addEventListener('click', (event) => {
+      if(event.target.classList.contains('menu__link')) {
+        localStorage.setItem('category', event.target.textContent)
+      }
+
+      if(event.target.classList.contains('burger-menu__button')) {
+        this.elements.burgerButton.classList.add('burger-menu__button--active');
+        this.elements.menuContainer.classList.add('burger-menu--active')
+      } else {
+        this.elements.burgerButton.classList.remove('burger-menu__button--active');
+        this.elements.menuContainer.classList.remove('burger-menu--active')
+      }
+    });
 
     this.elements.menuNodes = this.elements.menuContainer.querySelectorAll('.menu__link')
   }

@@ -151,11 +151,11 @@ class Game {
           }
 
         }
-
-        console.log(this.game.shuffleAudio);
-        console.log('audio: ', this.game.currentAudioIndex);
-        console.log('card: ', this.props.currentCardIndex)
-        console.log('guess: ', this.game.guessArray)
+        //
+        // console.log(this.game.shuffleAudio);
+        // console.log('audio: ', this.game.currentAudioIndex);
+        // console.log('card: ', this.props.currentCardIndex)
+        // console.log('guess: ', this.game.guessArray)
       }
     }
   }
