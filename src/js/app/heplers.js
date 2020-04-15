@@ -4,4 +4,9 @@ function rotateCard(item) {
 
 const playAudio = (url) => new Audio(url).play();
 
-export { rotateCard, playAudio }
+const shuffleArray = (array) => array
+    .map((a) => [Math.random(), a])
+    .sort((a, b) => a[0] - b[0])
+    .map((a) => a[1]);
+
+export { rotateCard, playAudio, shuffleArray }
