@@ -11,6 +11,10 @@ class Game {
       card: null,
       startButton: null,
       main: document.querySelector('.main'),
+      modal: document.querySelector('.modal'),
+      stars: null,
+      starCorrect: null,
+      starError: null,
     };
 
     this.props = {
@@ -43,7 +47,23 @@ class Game {
       classList: ['button', 'button--start', 'hidden'],
     });
 
+    this.elements.stars = builtHtmlElement({
+      tagName: 'div',
+      classList: ['star__container'],
+    });
+
+    this.elements.starCorrect = builtHtmlElement({
+      tagName: 'div',
+      classList: ['star', 'star--correct'],
+    });
+
+    this.elements.starError = builtHtmlElement({
+      tagName: 'div',
+      classList: ['star', 'star--error'],
+    });
+
     this.elements.cardContainer.appendChild(this.createItems());
+    this.elements.main.appendChild(this.elements.stars);
     this.elements.main.appendChild(this.elements.cardContainer);
     this.elements.main.appendChild(this.elements.startButton);
 
@@ -100,6 +120,8 @@ class Game {
           } else {
             playAudio('data/audio/error.mp3');
             this.game.guessArray.push('error');
+            const cloneStar = this.elements.starError.cloneNode(true);
+            this.elements.stars.append(cloneStar);
           }
 
         } else {
@@ -112,6 +134,8 @@ class Game {
               event.stopPropagation();
             } else {
               this.game.guessArray.push('cool');
+              const cloneStar = this.elements.starCorrect.cloneNode(true);
+              this.elements.stars.append(cloneStar);
               playAudio('data/audio/correct.mp3');
               currentChild.classList.add('blur');
             }
@@ -123,6 +147,7 @@ class Game {
             this.game.guessArray.length = 0;
             this.elements.startButton.classList.remove('button--repeat');
             this.elements.cardContainer.childNodes.forEach(item => item.classList.remove('blur'));
+            this.elements.stars.innerHTML = '';
           }
 
         }
@@ -166,11 +191,19 @@ class Game {
       .filter(Boolean)
       .length;
 
+    const modalText = this.elements.modal.querySelector('.modal__text');
+    this.elements.modal.addEventListener('click', (event) => {
+      if(event.target.classList.contains('modal__close') || event.target === this.elements.modal) {
+        this.elements.modal.classList.remove('visible');
+      }
+    });
+
     if(!error) {
-      alert('without errors')
+      modalText.innerText = 'without error';
     } else {
-      alert(`with ${error} error`)
+      modalText.innerText = `with ${error} error`;
     }
+    this.elements.modal.classList.add('visible');
   }
 }
 
