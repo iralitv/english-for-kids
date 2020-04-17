@@ -194,13 +194,13 @@ class Game {
     if (!error) {
       playAudio('data/audio/success.mp3');
       resultText.innerText = 'You are COOL! Without errors';
-      resultImage.setAttribute('src', 'data/img/success.jpg');
+      resultImage.setAttribute('src', 'data/img/success.svg');
     } else {
       playAudio('data/audio/failure.mp3');
       resultText.innerText = (error === 1)
         ? `Almost! With ${error} error`
         : `You are lalka! With ${error} errors`;
-      resultImage.setAttribute('src', 'data/img/failure.jpg');
+      resultImage.setAttribute('src', 'data/img/failure.svg');
     }
     this.elements.modal.classList.add('visible');
   }
