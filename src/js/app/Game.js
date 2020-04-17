@@ -76,19 +76,17 @@ class Game {
       (event) => this.changeMode(event));
 
     this.elements.cardContainer.addEventListener('click', (e) => this.selectCard(e));
-    this.elements.cardContainer.addEventListener('mouseout', (event) => {
-      let relatedTarget = event.relatedTarget && event.relatedTarget.closest('.is-flipped');
-
-      if(relatedTarget) {
-        setTimeout(() => rotateCard(relatedTarget), 100);
-      }
-    });
     this.elements.startButton.addEventListener('click', (e) => this.startGame(e));
   }
 
   createItems() {
     const fragment = document.createDocumentFragment();
-    const categoryIndex = cards[0].indexOf(this.props.category);
+    let categoryIndex = 0;
+    cards[0].forEach((item, index) => {
+      if(item.name === this.props.category) {
+        categoryIndex = index;
+      }
+    });
 
     const dataCards = cards[categoryIndex];
     dataCards.forEach(item => {
@@ -191,7 +189,8 @@ class Game {
       .filter(Boolean)
       .length;
 
-    const modalText = this.elements.modal.querySelector('.modal__text');
+    const resultText = this.elements.modal.querySelector('.result__text');
+    const resultImage = this.elements.modal.querySelector('.result__img');
     this.elements.modal.addEventListener('click', (event) => {
       if(event.target.classList.contains('modal__close') || event.target === this.elements.modal) {
         this.elements.modal.classList.remove('visible');
@@ -199,9 +198,16 @@ class Game {
     });
 
     if(!error) {
-      modalText.innerText = 'without error';
+      playAudio('data/audio/success.mp3');
+      resultText.innerText = 'You are COOL! Without errors';
+      resultImage.setAttribute('src', 'data/img/success.jpg')
     } else {
-      modalText.innerText = `with ${error} error`;
+      playAudio('data/audio/failure.mp3');
+      resultText.innerText =
+        (error === 1)
+          ? `Almost! With ${error} error`
+          : `You are lalka! With ${error} errors` ;
+      resultImage.setAttribute('src', 'data/img/failure.jpg')
     }
     this.elements.modal.classList.add('visible');
   }
