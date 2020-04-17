@@ -9,6 +9,22 @@ $color-second-dark: #a67a00;
 $color-third: #ff3d00;
 $color-third-dark: #ff9473;
 
+$break-small: 475px;
+$break-medium: 768px;
+$break-large: 1024px;
+
+@mixin respond-to($media) {
+  @if $media == handhelds {
+    @media only screen and (max-width: $break-small) { @content; }
+  }
+  @if $media == medium-screens {
+    @media only screen and (max-width: $break-medium) { @content; }
+  }
+  @if $media == wide-screens {
+    @media only screen and (max-width: $break-medium) { @content; }
+  }
+}
+
 @font-face {
   font-family: "UbuntuMono-Regular";
   src: url("../fonts/UbuntuMono-Regular.ttf") format("opentype");
@@ -30,10 +46,11 @@ $color-third-dark: #ff9473;
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0 auto 10px;
 }
 
 .button {
-  padding: 5px 10px;
+  padding: 5px 15px;
   border: 2px solid $color-second;
   background: $color-second;
   color: $color-main-extra-dark;
@@ -157,22 +174,26 @@ $color-third-dark: #ff9473;
   }
 
   &__nav {
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     position: fixed;
     top: 0;
     left: 0;
-    width: 35%;
+    width: 35vw;
     height: 100vh;
     box-sizing: border-box;
     background: $color-main-dark;
     padding: 80px 40px;
     z-index: 10;
+    transform: translateX(-100%);
+    transition: transform .2s ease-in-out;
+    @include respond-to(medium-screens) { width: 45vw; }
+    @include respond-to(handhelds) { width: 65vw; }
   }
   &--active {
     &.burger-menu__nav {
-      display: flex;
+      transform: translateX(0);
     }
   }
   &__button--active {
@@ -200,6 +221,12 @@ $color-third-dark: #ff9473;
   transform-style: preserve-3d;
   transform-origin: right center;
   transition: transform 0.6s;
+  @include respond-to(medium-screens) {
+    height: 160px;
+  }
+  @include respond-to(handhelds) {
+    height: 130px;
+  }
   &:hover {
     border: 2px solid $color-main-dark;
   }
@@ -214,9 +241,17 @@ $color-third-dark: #ff9473;
     grid-gap: 20px;
     perspective: 2000px;
     margin: 15px auto;
+    @include respond-to(medium-screens) {
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      margin-top: 0;
+    }
+    @include respond-to(handhelds) {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
   &__img {
-    height: 70%;
+    height: 65%;
     margin: 5px;
     display: block;
     border-radius: 5px;
@@ -276,10 +311,6 @@ $color-third-dark: #ff9473;
   }
 }
 
-.button {
-
-}
-
 .modal {
   display: none;
   position: fixed;
@@ -335,14 +366,19 @@ $color-third-dark: #ff9473;
   background-repeat: no-repeat;
   background-size: 100% 100%;
   &__container {
-    width: 100%;
+    width: 90%;
     height: 50px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 0 20px;
     box-sizing: border-box;
+    @include respond-to(medium-screens) {
+      width: 89%;
+    }
+    @include respond-to(handhelds) {
+      width: 94%;
+    }
   }
   &--error {
     background-image: url("../img/star_black.svg");
@@ -372,6 +408,8 @@ $color-third-dark: #ff9473;
 .bread-crumbs {
   font-size: 2rem;
   color: $color-main-extra-dark;
+  @include respond-to(medium-screens) { font-size: 1.5rem; }
+  @include respond-to(handhelds) { font-size: 1.2rem; }
 }
 
 .hidden {

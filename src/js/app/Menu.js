@@ -71,7 +71,7 @@ class Menu {
         localStorage.setItem('category', event.target.textContent);
       }
 
-      if (event.target.classList.contains('burger-menu__button')) {
+      if (event.target.closest('.burger-menu__button')) {
         this.elements.burgerButton.classList.toggle('burger-menu__button--active');
         this.elements.menuContainer.classList.toggle('burger-menu--active');
       } else {
