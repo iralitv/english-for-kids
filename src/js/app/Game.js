@@ -1,5 +1,5 @@
 import buildCard from './cardTemplate';
-import cards from '../../../data/cards';
+import cards from '../../data/cards';
 import builtHtmlElement from './templateHelper';
 import { isMenuCategory, isTrainMode } from './flags';
 import { playAudio, rotateCard, shuffleArray } from './heplers';
