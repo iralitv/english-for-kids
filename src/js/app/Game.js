@@ -1,9 +1,9 @@
 import buildCard from './cardTemplate';
 import cards from '../../../data/cards';
 import builtHtmlElement from './templateHelper';
-import {isMenuCategory, isStatisticCategory, isTrainMode} from './flags';
+import { isGameCategory, isStatisticCategory, isTrainMode } from './flags';
 import { playAudio, rotateCard, shuffleArray } from './heplers';
-import Statistic from "./statistic";
+import Statistic from './Statistic';
 
 class Game {
   constructor() {
@@ -70,7 +70,7 @@ class Game {
 
     if (!isTrainMode(localStorage.getItem('mode'))) {
       this.elements.cardContainer.childNodes.forEach((item) => item.classList.add('card--play'));
-      if (!isMenuCategory) {
+      if (!isGameCategory) {
         this.elements.startButton.classList.remove('hidden');
       }
     }
@@ -93,8 +93,9 @@ class Game {
 
     const dataCards = cards[categoryIndex];
     if (isStatisticCategory) {
-      const myStatistic = new Statistic();
-      fragment.appendChild(myStatistic.init());
+      this.elements.cardContainer.classList.add('statistic__container');
+      this.elements.cardContainer.classList.remove('card__container');
+      fragment.appendChild(Statistic());
     } else {
       dataCards.forEach((item) => {
         const card = buildCard(item, this.props.mode);
@@ -165,7 +166,7 @@ class Game {
 
     if (!isTrainMode(event.target.value)) {
       this.elements.cardContainer.childNodes.forEach((item) => item.classList.add('card--play'));
-      if (!isMenuCategory) {
+      if (isGameCategory) {
         this.elements.startButton.classList.remove('hidden');
       }
     }
