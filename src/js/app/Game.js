@@ -70,7 +70,7 @@ class Game {
 
     if (!isTrainMode(localStorage.getItem('mode'))) {
       this.elements.cardContainer.childNodes.forEach((item) => item.classList.add('card--play'));
-      if (!isGameCategory) {
+      if (isGameCategory) {
         this.elements.startButton.classList.remove('hidden');
       }
     }
@@ -103,6 +103,7 @@ class Game {
         fragment.appendChild(card);
       });
     }
+
 
     return fragment;
   }
