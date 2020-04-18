@@ -36,6 +36,10 @@ const cards = [
       name: 'Kitchen',
       image: 'img/kitchen.svg',
     },
+    {
+      name: 'Statistic',
+      image: 'img/draw.svg',
+    },
   ],
   [
     {

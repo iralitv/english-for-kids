@@ -1,8 +1,9 @@
 import buildCard from './cardTemplate';
-import cards from '../../data/cards';
+import cards from '../../../data/cards';
 import builtHtmlElement from './templateHelper';
-import { isMenuCategory, isTrainMode } from './flags';
+import {isMenuCategory, isStatisticCategory, isTrainMode} from './flags';
 import { playAudio, rotateCard, shuffleArray } from './heplers';
+import Statistic from "./statistic";
 
 class Game {
   constructor() {
@@ -91,11 +92,16 @@ class Game {
     });
 
     const dataCards = cards[categoryIndex];
-    dataCards.forEach((item) => {
-      const card = buildCard(item, this.props.mode);
-      this.data.audio.push(item.audioSrc);
-      fragment.appendChild(card);
-    });
+    if (isStatisticCategory) {
+      const myStatistic = new Statistic();
+      fragment.appendChild(myStatistic.init());
+    } else {
+      dataCards.forEach((item) => {
+        const card = buildCard(item, this.props.mode);
+        this.data.audio.push(item.audioSrc);
+        fragment.appendChild(card);
+      });
+    }
 
     return fragment;
   }

@@ -1,5 +1,5 @@
 import builtHtmlElement from './templateHelper';
-import cards from '../../data/cards';
+import cards from '../../../data/cards';
 
 class Menu {
   constructor() {
