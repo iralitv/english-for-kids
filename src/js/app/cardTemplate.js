@@ -8,7 +8,17 @@ const buildCard = (item) => {
     classList: ['card'],
   });
 
-  if (!isMenuCategory) {
+  if (isMenuCategory) {
+    card.innerHTML = `
+      <a href="category.html" class="card__link link">
+        <img src="data/${item.image}" alt="" class="link__img"/>
+        <p class="link__text">${item.name}</p>
+      </a>
+    `;
+    card.addEventListener('click', () => {
+      localStorage.setItem('category', item.name);
+    });
+  } else {
     card.innerHTML = `
       <div class="card__face card__face--front">
         <img src="data/${item.image}" alt="" class="card__img"/>
@@ -23,16 +33,6 @@ const buildCard = (item) => {
       </div>`;
     card.addEventListener('mouseleave', (event) => {
       if (event.target.classList.contains('is-flipped')) { rotateCard(event.currentTarget); }
-    });
-  } else {
-    card.innerHTML = `
-      <a href="category.html" class="card__link link">
-        <img src="data/${item.image}" alt="" class="link__img"/>
-        <p class="link__text">${item.name}</p>
-      </a>
-    `;
-    card.addEventListener('click', () => {
-      localStorage.setItem('category', item.name);
     });
   }
 

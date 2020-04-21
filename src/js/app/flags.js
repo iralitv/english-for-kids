@@ -1,13 +1,15 @@
 import cards from '../../../data/cards';
 
-const isTrainMode = (mode) => mode === 'train';
-const isMenuCategory = localStorage.getItem('category') === cards[0][0].name;
-const isStatisticCategory = localStorage.getItem('category') === 'Statistic';
-const isGameCategory = localStorage.getItem('category') !== 'Main menu'
-  && localStorage.getItem('category') !== 'Statistic';
+const category = localStorage.getItem('category');
+
+const checkTrainMode = (mode) => mode === 'train';
+const isMenuCategory = category === cards[0][0].name;
+const isStatisticCategory = category === 'Statistic';
+const isGameCategory = category !== 'Main menu'
+  && category !== 'Statistic';
 
 export {
-  isTrainMode,
+  checkTrainMode,
   isMenuCategory,
   isStatisticCategory,
   isGameCategory,

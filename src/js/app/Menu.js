@@ -40,7 +40,7 @@ class Menu {
     });
 
     this.elements.burgerButton.innerHTML = '<span class="burger-menu__lines"></span>';
-    this.elements.breadCrumbs.innerText = `${localStorage.getItem('category')}`;
+    this.elements.breadCrumbs.innerText = `${localStorage.getItem('category')}` || 'Main menu';
 
     this.elements.modeItem.innerHTML = `
       <input type="radio" id="radio-one" name="switch" value="train" checked/>

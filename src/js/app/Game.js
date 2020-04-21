@@ -1,7 +1,7 @@
 import buildCard from './cardTemplate';
 import cards from '../../../data/cards';
 import builtHtmlElement from './templateHelper';
-import { isGameCategory, isStatisticCategory, isTrainMode } from './flags';
+import { isGameCategory, isStatisticCategory, checkTrainMode } from './flags';
 import { playAudio, rotateCard, shuffleArray } from './heplers';
 import Statistic from './Statistic';
 
@@ -68,7 +68,9 @@ class Game {
     this.elements.main.appendChild(this.elements.cardContainer);
     this.elements.main.appendChild(this.elements.startButton);
 
-    if (!isTrainMode(localStorage.getItem('mode'))) {
+    const mode = localStorage.getItem('mode');
+
+    if (!checkTrainMode(mode)) {
       this.elements.cardContainer.childNodes.forEach((item) => item.classList.add('card--play'));
       if (isGameCategory) {
         this.elements.startButton.classList.remove('hidden');
@@ -79,17 +81,19 @@ class Game {
       (event) => this.changeMode(event));
 
     this.elements.cardContainer.addEventListener('click', (e) => this.selectCard(e));
-    this.elements.startButton.addEventListener('click', (e) => this.startGame(e));
+    this.elements.startButton.addEventListener('click', (e) => this.playGame(e));
   }
 
   createItems() {
     const fragment = document.createDocumentFragment();
     let categoryIndex = 0;
-    cards[0].forEach((item, index) => {
-      if (item.name === this.props.category) {
-        categoryIndex = index;
+
+    for (let i = 0; i < cards[0].length; i += 1) {
+      if (cards[0][i].name === this.props.category) {
+        categoryIndex = i;
+        break;
       }
-    });
+    }
 
     const dataCards = cards[categoryIndex];
     if (isStatisticCategory) {
@@ -103,69 +107,17 @@ class Game {
         fragment.appendChild(card);
       });
     }
-
-
     return fragment;
-  }
-
-  selectCard(event) {
-    const currentChild = event.target.closest('.card__face') && event.target.closest('.card__face').parentNode;
-    this.props.currentCardIndex = [...event.currentTarget.childNodes].indexOf(currentChild);
-
-    if (this.props.currentCardIndex !== -1) {
-      if (isTrainMode(localStorage.getItem('mode'))) {
-        if (!event.target.classList.contains('card__desc--button')) {
-          playAudio(`data/${this.data.audio[this.props.currentCardIndex]}`);
-        } else {
-          rotateCard(event.currentTarget.children[this.props.currentCardIndex]);
-        }
-      } else if (!isTrainMode(localStorage.getItem('mode')) && this.game.isStart) {
-        if (this.game.currentAudioIndex !== this.props.currentCardIndex) {
-          if (currentChild.classList.contains('blur')) {
-            event.stopPropagation();
-          } else {
-            playAudio('data/audio/error.mp3');
-            this.game.guessArray.push('error');
-            const cloneStar = this.elements.starError.cloneNode(true);
-            this.elements.stars.append(cloneStar);
-          }
-        } else if (this.game.shuffleAudio.length) {
-          const [shuffleItem] = this.game.shuffleAudio.splice(0, 1);
-          this.game.currentAudio = shuffleItem;
-          this.game.currentAudioIndex = this.data.audio.indexOf(this.game.currentAudio);
-
-          if (currentChild.classList.contains('blur')) {
-            event.stopPropagation();
-          } else {
-            this.game.guessArray.push('cool');
-            const cloneStar = this.elements.starCorrect.cloneNode(true);
-            this.elements.stars.append(cloneStar);
-            playAudio('data/audio/correct.mp3');
-            currentChild.classList.add('blur');
-          }
-
-          setTimeout(() => playAudio(`data/${this.game.currentAudio}`), 500);
-        } else {
-          this.checkResult(this.game.guessArray);
-          this.game.isStart = false;
-          this.game.guessArray.length = 0;
-          this.elements.startButton.classList.remove('button--repeat');
-          this.elements.cardContainer.childNodes.forEach((item) => item.classList.remove('blur'));
-          this.elements.stars.innerHTML = '';
-        }
-      }
-    }
   }
 
   changeMode(event) {
     localStorage.setItem('mode', event.target.value);
 
-    if (isTrainMode(event.target.value)) {
+    if (checkTrainMode(event.target.value)) {
+      this.resetResult();
       this.elements.cardContainer.childNodes.forEach((item) => item.classList.remove('card--play'));
       this.elements.startButton.classList.add('hidden');
-    }
-
-    if (!isTrainMode(event.target.value)) {
+    } else {
       this.elements.cardContainer.childNodes.forEach((item) => item.classList.add('card--play'));
       if (isGameCategory) {
         this.elements.startButton.classList.remove('hidden');
@@ -173,13 +125,70 @@ class Game {
     }
   }
 
-  startGame(event) {
+  selectCard(event) {
+    const mode = localStorage.getItem('mode');
+    const currentChild = event.target.closest('.card__face') && event.target.closest('.card__face').parentNode;
+    this.props.currentCardIndex = [...event.currentTarget.childNodes].indexOf(currentChild);
+
+    if (this.props.currentCardIndex === -1) {
+      return;
+    }
+
+    if (checkTrainMode(mode)) {
+      if (!event.target.classList.contains('card__desc--button')) {
+        playAudio(`data/${this.data.audio[this.props.currentCardIndex]}`);
+      } else {
+        rotateCard(event.currentTarget.children[this.props.currentCardIndex]);
+      }
+    } else if (this.game.isStart) {
+      if (this.game.currentAudioIndex !== this.props.currentCardIndex) {
+        this.handleError(event, currentChild);
+      } else if (this.game.shuffleAudio.length) {
+        this.getCurrentAudio();
+        this.handleCorrect(event, currentChild);
+
+        setTimeout(() => playAudio(`data/${this.game.currentAudio}`), 500);
+      } else {
+        this.checkResult(this.game.guessArray);
+        this.resetResult();
+      }
+    }
+  }
+
+  getCurrentAudio() {
+    const [shuffleItem] = this.game.shuffleAudio.splice(0, 1);
+    this.game.currentAudio = shuffleItem;
+    this.game.currentAudioIndex = this.data.audio.indexOf(this.game.currentAudio);
+  }
+
+  handleError(event, currentChild) {
+    if (currentChild.classList.contains('blur')) {
+      event.stopPropagation();
+    } else {
+      playAudio('data/audio/error.mp3');
+      this.game.guessArray.push('error');
+      const cloneStar = this.elements.starError.cloneNode(true);
+      this.elements.stars.append(cloneStar);
+    }
+  }
+
+  handleCorrect(event, currentChild) {
+    if (currentChild.classList.contains('blur')) {
+      event.stopPropagation();
+    } else {
+      this.game.guessArray.push('cool');
+      const cloneStar = this.elements.starCorrect.cloneNode(true);
+      this.elements.stars.append(cloneStar);
+      playAudio('data/audio/correct.mp3');
+      currentChild.classList.add('blur');
+    }
+  }
+
+  playGame(event) {
     this.game.isStart = true;
     if (!event.target.classList.contains('button--repeat')) {
       this.game.shuffleAudio = shuffleArray(this.data.audio);
-      const [shuffleItem] = this.game.shuffleAudio.splice(0, 1);
-      this.game.currentAudio = shuffleItem;
-      this.game.currentAudioIndex = this.data.audio.indexOf(this.game.currentAudio);
+      this.getCurrentAudio();
     }
     event.currentTarget.classList.add('button--repeat');
     playAudio(`data/${this.game.currentAudio}`);
@@ -193,24 +202,33 @@ class Game {
 
     const resultText = this.elements.modal.querySelector('.result__text');
     const resultImage = this.elements.modal.querySelector('.result__img');
+
     this.elements.modal.addEventListener('click', (event) => {
       if (event.target.classList.contains('modal__close') || event.target === this.elements.modal) {
         this.elements.modal.classList.remove('visible');
       }
     });
 
-    if (!error) {
-      playAudio('data/audio/success.mp3');
-      resultText.innerText = 'You are COOL! Without errors';
-      resultImage.setAttribute('src', 'data/img/success.svg');
-    } else {
+    if (error) {
       playAudio('data/audio/failure.mp3');
       resultText.innerText = (error === 1)
         ? `Almost! With ${error} error`
         : `You are lalka! With ${error} errors`;
       resultImage.setAttribute('src', 'data/img/failure.svg');
+    } else {
+      playAudio('data/audio/success.mp3');
+      resultText.innerText = 'You are COOL! Without errors';
+      resultImage.setAttribute('src', 'data/img/success.svg');
     }
     this.elements.modal.classList.add('visible');
+  }
+
+  resetResult() {
+    this.game.isStart = false;
+    this.game.guessArray.length = 0;
+    this.elements.startButton.classList.remove('button--repeat');
+    this.elements.cardContainer.childNodes.forEach((item) => item.classList.remove('blur'));
+    this.elements.stars.innerHTML = '';
   }
 }
 

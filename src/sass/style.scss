@@ -8,19 +8,16 @@ $color-second-extra-light: #ffeec0;
 $color-second-dark: #a67a00;
 $color-third: #ff3d00;
 $color-third-dark: #ff9473;
+$color-third-light: #ff6433;
 
 $break-small: 475px;
 $break-medium: 768px;
-$break-large: 1024px;
 
 @mixin respond-to($media) {
   @if $media == handhelds {
     @media only screen and (max-width: $break-small) { @content; }
   }
   @if $media == medium-screens {
-    @media only screen and (max-width: $break-medium) { @content; }
-  }
-  @if $media == wide-screens {
     @media only screen and (max-width: $break-medium) { @content; }
   }
 }
@@ -90,6 +87,9 @@ $break-large: 1024px;
     padding: 10px 0;
     text-transform: uppercase;
     color:$color-third-dark;
+    &:hover {
+      color: $color-third-light;
+    }
     &--active {
       color: $color-third;
     }
