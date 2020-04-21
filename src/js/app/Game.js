@@ -204,7 +204,8 @@ class Game {
     const resultImage = this.elements.modal.querySelector('.result__img');
 
     this.elements.modal.addEventListener('click', (event) => {
-      if (event.target.classList.contains('modal__close') || event.target === this.elements.modal) {
+      const isModalCloseTrigger = event.target.classList.contains('modal__close') || event.target === this.elements.modal;
+      if (isModalCloseTrigger) {
         this.elements.modal.classList.remove('visible');
       }
     });
